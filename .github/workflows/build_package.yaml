@@ -1,0 +1,15 @@
+name: Manual - Build Sign and Upload Package
+
+env:
+
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: macos-12
+
+    steps:
+    - name: Checkout the Package Repo
+      uses: actions/checkout@v3.2.0
+      with:
+        fetch-depth: 0
