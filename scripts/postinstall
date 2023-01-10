@@ -1,0 +1,15 @@
+#!/bin/sh
+## postinstall
+
+pathToScript=$0
+pathToPackage=$1
+targetLocation=$2
+targetVolume=$3
+
+
+
+
+
+
+exit 0		## Success
+exit 1		## Failure
