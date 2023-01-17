@@ -17,10 +17,10 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
-          echo ::What do we have in our DIR: \
-          ls -la * \
-          echo ::Where are we: \
-          pwd \
+          echo "What do we have in our DIR"
+          ls -la *
+          echo "Where are we"
+          pwd
           whoami 
 
 
