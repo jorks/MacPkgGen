@@ -31,12 +31,11 @@ jobs:
       - name: Install Apple Developer PKG certificates
         uses: ssrobins/import-codesign-certs@04ce695a5e6002f1971a8ed78fedd676318f950f
         with:
-          create-keychain: false
           keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
           p12-file-base64: ${{ secrets.PKG_CERTIFICATES_P12 }}
           p12-password: ${{ secrets.PKG_CERTIFICATES_P12_PASSWORD }}
 
       # Runs a single command using the runners shell
       - name: Check for Keychain Item
-        run: | 
+        run: |
           sudo security find-certificate -c "Developer ID Installer: SEEK Limited (KS9GBQ67G7)"
