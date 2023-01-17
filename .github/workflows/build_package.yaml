@@ -22,6 +22,7 @@ jobs:
           echo "Where are we"
           pwd
           whoami 
+          which python3
 
 
       # # Install PKG Signing Certificate - Next Step
