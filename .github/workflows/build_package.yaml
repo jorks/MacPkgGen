@@ -1,15 +1,35 @@
 name: Manual - Build Sign and Upload Package
 
-env:
-
 on: [workflow_dispatch]
 
 jobs:
-  build:
+  build-pkg:
     runs-on: macos-12
 
     steps:
-    - name: Checkout the Package Repo
-      uses: actions/checkout@v3.2.0
-      with:
-        fetch-depth: 0
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo ::What do we have in our DIR:
+          ls -la * -r
+          echo ::Where are we:
+          pwd
+          whoami
+          
+
+      # # Install PKG Signing Certificate
+      # # NOTE: uses: Working version of the the origional apple-actions/import-codesign-certs
+      # - name: Install Apple Installer certificates
+      #   uses: ssrobins/import-codesign-certs@04ce695a5e6002f1971a8ed78fedd676318f950f
+      #   with:
+      #     create-keychain: false # do not create a new keychain for this value
+      #     keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
+      #     p12-file-base64: ${{ secrets.PKG_CERTIFICATES_P12 }}
+      #     p12-password: ${{ secrets.PKG_CERTIFICATES_P12_PASSWORD }}
