@@ -27,3 +27,6 @@ jobs:
 
       - name: Downloading munkipkg and testing it can exicute with python3 
         run: ./workflow/munkipkg_install.sh
+
+      - name: Run the munkipkg build package script 
+        run: ./workflow/build_package.sh
