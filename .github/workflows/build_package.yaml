@@ -30,3 +30,9 @@ jobs:
 
       - name: Run the munkipkg build package script 
         run: ./workflow/build_package.sh
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v3.1.1
+        with:
+          name: packages
+          path: this_is_a_test/build
