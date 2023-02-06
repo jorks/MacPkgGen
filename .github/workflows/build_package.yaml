@@ -10,21 +10,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo "What do we have in our DIR"
-          ls -la *
-          echo "Where are we"
-          pwd
-          whoami 
-          which python3
-
-
       # Install PKG Signing Certificate
       # Add the P12 file into a GitHub Secred: base64 -i <certificate_name>.p12 | pbcopy
       # NOTE: uses: Working version of the the origional apple-actions/import-codesign-certs
@@ -39,3 +24,6 @@ jobs:
       - name: Check for Keychain Item
         run: |
           sudo security find-certificate -c "Developer ID Installer: SEEK Limited (KS9GBQ67G7)"
+
+      - name: Downloading munkipkg and testing it can exicute with python3 
+        run: ./workflow/munkipkg_install.sh
