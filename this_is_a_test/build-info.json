@@ -3,7 +3,7 @@
     "suppress_bundle_relocation": true,
     "postinstall_action": "none",
     "preserve_xattr": false,
-    "name": "this_is_a_test-${version}.pkg",
+    "name": "Security Agent-${version}.pkg",
     "identifier": "net.jorks.this_is_a_test",
     "install_location": "/",
     "version": "1.1",

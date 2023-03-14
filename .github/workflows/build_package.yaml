@@ -26,7 +26,7 @@ jobs:
           sudo security find-certificate -c "Developer ID Installer: SEEK Limited (KS9GBQ67G7)"
 
       - name: Downloading munkipkg and testing it can exicute with python3 
-        run: ./workflow/munkipkg_install.sh
+        run: ./workflow/install_munkipkg.sh
 
       - name: Run the munkipkg build package script 
         run: ./workflow/build_package.sh

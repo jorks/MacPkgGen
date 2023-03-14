@@ -1,49 +1,30 @@
 #!/bin/sh
-#
-# An example hook script to verify what is about to be committed.
-# Called by "git commit" with no arguments.  The hook should
-# exit with non-zero status after issuing an appropriate message if
-# it wants to stop the commit.
-#
-# To enable this hook, rename this file to "pre-commit".
 
-if git rev-parse --verify HEAD >/dev/null 2>&1
-then
-	against=HEAD
-else
-	# Initial commit: diff against an empty tree object
-	against=$(git hash-object -t tree /dev/null)
-fi
+# This script will ensure a BOM file is created or updated at commit
 
-# If you want to allow non-ASCII filenames set this variable to true.
-allownonascii=$(git config --type=bool hooks.allownonascii)
+MP_BIN_DIR="/tmp/munki-pkg"
+SCRIPT_DIR=$( realpath "${0}" )
+BASE_DIR_1=$( dirname "${SCRIPT_DIR}" )
+BASE_DIR_2=$( dirname "${BASE_DIR_1}" )
+PROJECT_DIR=$( dirname "${BASE_DIR_2}" )
 
-# Redirect output to stderr.
-exec 1>&2
+echo "Project directory is: ${PROJECT_DIR}"
 
-# Cross platform projects tend to avoid non-ASCII filenames; prevent
-# them from being added to the repository. We exploit the fact that the
-# printable range starts at the space character and ends with tilde.
-if [ "$allownonascii" != "true" ] &&
-	# Note that the use of brackets around a tr range is ok here, (it's
-	# even required, for portability to Solaris 10's /usr/bin/tr), since
-	# the square bracket bytes happen to fall in the designated range.
-	test $(git diff --cached --name-only --diff-filter=A -z $against |
-	  LC_ALL=C tr -d '[ -~]\0' | wc -c) != 0
-then
-	cat <<\EOF
-Error: Attempt to add a non-ASCII file name.
-
-This can cause problems if you want to work with people on other platforms.
-
-To be portable it is advisable to rename the file.
-
-If you know what you are doing you can disable this check using:
-
-  git config hooks.allownonascii true
-EOF
+# Find the build-info file and set the package directory
+BUILD_INFO_FILE="$( find "${PROJECT_DIR}" -name "build-info*" -print )"
+if [ -z "${BUILD_INFO_FILE}" ]; then
+	echo "Error no build-info file found. Exiting." 1>&2
 	exit 1
+else
+	PKG_PATH="$( dirname "${BUILD_INFO_FILE}" )"
+	echo "Found package path: ${PKG_PATH}"
 fi
 
-# If there are whitespace errors, print the offending file names and fail.
-exec git diff-index --check --cached $against --
+# Create a BOM File when we do git commits
+if [ ! -d "/Users/runner" ]; then
+    echo "Status: We are running on a local clone"
+    echo "Exporting a BOM info file"
+    python3 "${MP_BIN_DIR}/munkipkg" --export-bom-info "$PKG_PATH"
+fi
+
+exit 0
