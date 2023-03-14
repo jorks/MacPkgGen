@@ -26,6 +26,17 @@ if [ ! -d "/Users/runner" ]; then
     echo "Status: We are running on a local clone"
     echo "Exporting a BOM info file"
     python3 "${MP_BIN_DIR}/munkipkg" --export-bom-info "$PKG_PATH"
+    EXPORT_STATUS=$?
 fi
+
+# TODO: Add BOM file to tacked files
+if [ "${EXPORT_STATUS}" -eq 0 ]; then
+	echo "Adding BOM file to tracked files"
+	git add "${PKG_PATH}"/Bom.txt
+else 
+	echo "Error: Something went wrong with the BOM file"
+	exit 1
+fi
+
 
 exit 0
