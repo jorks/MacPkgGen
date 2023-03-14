@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # This script will ensure a BOM file is created or updated at commit
+# File is .git/hooks/pre-commit
 
 MP_BIN_DIR="/tmp/munki-pkg"
 SCRIPT_DIR=$( realpath "${0}" )
