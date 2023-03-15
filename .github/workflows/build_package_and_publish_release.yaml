@@ -1,0 +1,61 @@
+name: Manual - Build Signed Package and Publish Release
+
+on: [workflow_dispatch]
+
+jobs:
+  build-pkg:
+    runs-on: macos-12
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Install PKG Signing Certificate
+      # Add the P12 file into a GitHub Secret: base64 -i <certificate_name>.p12 | pbcopy
+      # NOTE: uses: Working version of the the origional apple-actions/import-codesign-certs
+      - name: Install Apple Developer PKG certificates
+        uses: ssrobins/import-codesign-certs@04ce695a5e6002f1971a8ed78fedd676318f950f
+        with:
+          keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
+          p12-file-base64: ${{ secrets.PKG_CERTIFICATES_P12 }}
+          p12-password: ${{ secrets.PKG_CERTIFICATES_P12_PASSWORD }}
+
+      - name: Downloading munkipkg and testing it can exicute with python3 
+        run: ./workflow/install_munkipkg.sh
+
+      - name: Run the munkipkg build package script 
+        run: ./workflow/build_package.sh
+
+      - name: Get Package Details
+        id: get_package_details
+        run: |
+          echo "PACKAGE_NAME=$(/bin/cat ./uploads/build-name.txt)" >> $GITHUB_ENV
+          echo "PACKAGE_VERSION=$(/bin/cat ./uploads/build-version.txt)" >> $GITHUB_ENV
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v0.1.15
+        with:
+          name: ${{env.PACKAGE_NAME}}-${{env.PACKAGE_VERSION}}
+          tag_name: v${{env.PACKAGE_VERSION}}
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+              # Notes
+              This package was created by GitHub Actions.
+              You can update this text as required for your use case, such as using a Github Action to generate a changelog.
+
+              ## Credits
+              Workflow and scripts by James Corcoran
+              https://github.com/jorks
+          files: ${{github.workspace}}/uploads/*.pkg
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v3.1.1
+        with:
+          name: ${{env.PACKAGE_NAME}}-${{env.PACKAGE_VERSION}}
+          path: |
+            uploads
+            !uploads/*.txt
+          if-no-files-found: error
