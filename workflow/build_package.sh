@@ -9,6 +9,7 @@ MP_BIN_DIR="/tmp/munki-pkg"
 SCRIPT_DIR=$( realpath "${0}" )
 BASE_DIR=$( dirname "${SCRIPT_DIR}" )
 PROJECT_DIR=$( dirname "${BASE_DIR}" )
+UPLOAD_DIR="${PROJECT_DIR}/uploads"
 
 echo "Project directory is: ${PROJECT_DIR}"
 
@@ -70,3 +71,38 @@ if [ "${PKG_RESULT}" != "0" ]; then
 else
 	echo "Success: Package was built ${PKG_RESULT}"
 fi
+
+
+
+# TODO: Notarize Nudge PKG
+# This is how it can be done:
+
+# # Setup notary credentials into the workflow keychain
+# xcrun notarytool store-credentials --apple-id "opensource@macadmins.io" --team-id "T4SK8ZXCXG" --password "$2" workflow
+
+# # Notarize nudge package
+# xcrun notarytool submit "$NUDGE_PKG_PATH/build/Nudge-$AUTOMATED_NUDGE_BUILD.pkg" --keychain-profile "workflow" --wait
+# xcrun stapler staple "$NUDGE_PKG_PATH/build/Nudge-$AUTOMATED_NUDGE_BUILD.pkg"
+
+
+# TODO: Move the package into a generic output directory
+# Move the signed pkg
+# Create outputs folder
+
+if [[ ! -d "/Users/runner" ]]; then
+	echo "Status: We are running on a github runner"
+    if [[ -d "${UPLOAD_DIR}" ]]; then
+  		/bin/rm -rf "${UPLOAD_DIR}"
+	fi
+	echo "Creating an uploads directory and adding files"
+	/bin/mkdir -p "${UPLOAD_DIR}"
+	/bin/mv "${PKG_PATH}/build/${PKG_NAME}-${PKG_VERSION}.pkg" "${UPLOAD_DIR}"
+	echo "Adding build info files"
+	echo "${PKG_NAME}" > "${UPLOAD_DIR}/build-name.txt"
+	echo "${PKG_VERSION}" > "${UPLOAD_DIR}/build-version.txt"
+fi
+
+
+
+
+

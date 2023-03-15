@@ -35,4 +35,5 @@ jobs:
         uses: actions/upload-artifact@v3.1.1
         with:
           name: packages
-          path: this_is_a_test/build
+          path: uploads
+          if-no-files-found: error
