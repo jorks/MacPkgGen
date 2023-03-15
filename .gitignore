@@ -1,4 +1,10 @@
+# Important Ignore Refernece
 .DS_Store
-.idea/*
-DEV_PRIVATE_NOTES.md
 uploads/*
+DEV_PRIVATE_NOTES.md
+
+# IDE Tools
+.idea/*
+*.sublime-project
+*.sublime-workspace
+
