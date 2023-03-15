@@ -89,7 +89,7 @@ fi
 # Move the signed pkg
 # Create outputs folder
 
-if [[ ! -d "/Users/runner" ]]; then
+if [[ -d "/Users/runner" ]]; then
 	echo "Status: We are running on a github runner"
     if [[ -d "${UPLOAD_DIR}" ]]; then
   		/bin/rm -rf "${UPLOAD_DIR}"
