@@ -1,8 +1,14 @@
 #!/bin/bash
 # set -x
 # This is the script that is executed by the workflow to build the package.
-# TODO:
-# - Export Name and Version to GitHub for use in release
+
+
+# Assign Script Input for Notarization Secrets
+# Do not hard code these values - use GitHub Secrets!
+# Running this script locally will NOT Notarize the package
+NOTARIZE_PASSWORD="${1}"
+NOTARIZE_APPLE_ID="${2}"
+NOTARIZE_TEAM_ID="${3}"
 
 
 MP_BIN_DIR="/tmp/munki-pkg"
@@ -72,22 +78,25 @@ else
 	echo "Success: Package was built ${PKG_RESULT}"
 fi
 
+# Notarize the Package for Gatekeeper
+if [[ -n "${NOTARIZE_PASSWORD}" && -n "${NOTARIZE_APPLE_ID}" && -n "${NOTARIZE_TEAM_ID}" ]]; then
+	echo "Recieved valid Notarization details. Will submit package for Notarization"
+	# Setup notary credentials into the GithubWorkflow keychain
+	xcrun notarytool store-credentials --apple-id "${NOTARIZE_APPLE_ID}" --team-id "${NOTARIZE_TEAM_ID}" --password "${NOTARIZE_PASSWORD}" GithubWorkflow
+
+	# Notarize and Staple Package
+	xcrun notarytool submit "${PKG_PATH}/build/${PKG_NAME}-${PKG_VERSION}.pkg" --keychain-profile "GithubWorkflow" --wait
+	xcrun stapler staple "${PKG_PATH}/build/${PKG_NAME}-${PKG_VERSION}.pkg"
+	NOTARIZE_STATUS=$?
+	if [[ "${NOTARIZE_STATUS}" -ne 0 ]]; then
+		echo "Error: Notarization failed"
+	fi
+else
+	echo "Did not receive valid Notarization details. Skipping Notarization"
+fi
 
 
-# TODO: Notarize Nudge PKG
-# This is how it can be done:
-
-# # Setup notary credentials into the workflow keychain
-# xcrun notarytool store-credentials --apple-id "opensource@macadmins.io" --team-id "T4SK8ZXCXG" --password "$2" workflow
-
-# # Notarize nudge package
-# xcrun notarytool submit "$NUDGE_PKG_PATH/build/Nudge-$AUTOMATED_NUDGE_BUILD.pkg" --keychain-profile "workflow" --wait
-# xcrun stapler staple "$NUDGE_PKG_PATH/build/Nudge-$AUTOMATED_NUDGE_BUILD.pkg"
-
-
-# TODO: Move the package into a generic output directory
-# Move the signed pkg
-# Create outputs folder
+# Move the Package output into an uploads folder for other workflow steps
 
 if [[ -d "/Users/runner" ]]; then
 	echo "Status: We are running on a github runner"
@@ -102,7 +111,7 @@ if [[ -d "/Users/runner" ]]; then
 	echo "${PKG_VERSION}" > "${UPLOAD_DIR}/build-version.txt"
 fi
 
-
+echo "Success: Package was build successfully."
 
 
 

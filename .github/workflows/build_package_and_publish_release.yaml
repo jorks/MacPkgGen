@@ -1,5 +1,10 @@
 name: Manual - Build Signed Package and Publish Release
 
+env:
+  NOTARIZE_PASSWORD: ${{ secrets.NOTARIZE_PASSWORD }}
+  NOTARIZE_APPLE_ID: ${{ secrets.NOTARIZE_APPLE_ID }}
+  NOTARIZE_TEAM_ID: ${{ secrets.NOTARIZE_TEAM_ID }}
+
 on: [workflow_dispatch]
 
 jobs:
@@ -12,7 +17,7 @@ jobs:
 
       # Install PKG Signing Certificate
       # Add the P12 file into a GitHub Secret: base64 -i <certificate_name>.p12 | pbcopy
-      # NOTE: uses: Working version of the the origional apple-actions/import-codesign-certs
+      # NOTE: uses: Working version of the the original apple-actions/import-codesign-certs
       - name: Install Apple Developer PKG certificates
         uses: ssrobins/import-codesign-certs@04ce695a5e6002f1971a8ed78fedd676318f950f
         with:
@@ -24,7 +29,7 @@ jobs:
         run: ./workflow/install_munkipkg.sh
 
       - name: Run the munkipkg build package script 
-        run: ./workflow/build_package.sh
+        run: ./workflow/build_package.sh $NOTARIZE_PASSWORD $NOTARIZE_APPLE_ID $NOTARIZE_TEAM_ID
 
       - name: Get Package Details
         id: get_package_details
