@@ -187,6 +187,25 @@ function install_git_pre-commit_hook() {
 	set +x
 }
 
+function message_error_pre-commit_hook() {
+cat << EOF
+
+==== WARNING ====
+There was an issue installing the pre-commit git hook.
+This git hook is required to create a BOM file used to 
+track permissions and empty folders. This is going to cause 
+issues when you attempt to build packages with GitHub Actions.
+
+You can fix this manually by copying the file:
+    workflow/pre-commit
+Into this hidden directory:
+	.git/hooks/pre-commit
+
+=================
+
+EOF
+}
+
 
 # Main
 
@@ -213,31 +232,16 @@ else
 	echo "Will still attempt moving forward. You may need to rm and start again sorry."
 fi
 
-if install_git_pre-commit_hook; then
-	echo "Success: Added a pre-commit hook to this git project"
-else
-	cat << EOF
-
-==== WARNING ====
-There was an issue installing the pre-commit git hook.
-This git hook is required to create a BOM file used to 
-track permissions and empty folders. This is going to cause 
-issues when you attempt to build packages with GitHub Actions.
-
-You can fix this manually by copying the file:
-    workflow/pre-commit
-Into this hidden directory:
-	.git/hooks/pre-commit
-
-=================
-
-EOF
-
-fi
-
 echo "Running: Blank Package Creation with name: ${NEW_PACKAGE_NAME}"
 if python3 /tmp/munki-pkg/munkipkg --json --create "${NEW_PACKAGE_NAME}"; then
 	echo "Success: New package structure created"
+	
+	if install_git_pre-commit_hook; then
+		echo "Success: Added a pre-commit hook to this git project"
+	else
+		message_error_pre-commit_hook
+	fi
+
 	git_add_commit
 	[[ "${PUSH_TO_GITHUB}" == "true" ]] && git_push
 else

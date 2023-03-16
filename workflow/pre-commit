@@ -23,7 +23,7 @@ fi
 
 # Create a BOM File when we do git commits
 if [ ! -d "/Users/runner" ]; then
-    echo "Status: We are running on a local clone"
+    echo "Status: We are running locally"
     echo "Exporting a BOM info file"
     python3 "${MP_BIN_DIR}/munkipkg" --export-bom-info "$PKG_PATH"
     EXPORT_STATUS=$?
