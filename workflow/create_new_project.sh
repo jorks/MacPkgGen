@@ -6,58 +6,248 @@
 
 
 # This is the GIT BITS
-
-NEW_PACKAGE_NAME="my_new_package2"
-NEW_PACKAGE_REMOTE="https://github.com/jorks/my_new_package2.git"
+# TODO: Make this interactive
+# NEW_PACKAGE_NAME="my_new_package2s"
 
 JORKS_TEMPLATE_REPO="https://github.com/jorks/Jamf-Prestage-Assets.git"
+JORKS_MUNKI_INSTALL="https://raw.githubusercontent.com/jorks/Jamf-Prestage-Assets/HEAD/workflow/install_munkipkg.sh"
 
-git clone "${JORKS_TEMPLATE_REPO}" "${NEW_PACKAGE_NAME}" && cd "${NEW_PACKAGE_NAME}" || exit
-rm -rf .git
-git init
-git add .
-git commit -m "New package created: ${NEW_PACKAGE_NAME}"
-git remote add origin "${NEW_PACKAGE_REMOTE}"
-git branch -M main
-git push -u origin main
+function prompt_for_inputs() {
 
+	while [[ -z "${NEW_PACKAGE_NAME}" ]]; do
+		echo "What is the Package Name: "
+		echo -n ": "
+		read -r NEW_PACKAGE_NAME
+	done
 
-# This is the Python / Xcode Command Line Tools Bits
+	cat << EOF
 
-chomp() {
-  printf "%s" "${1/"$'\n'"/}"
+==== IMPORTANT ====
+The script will create a new local git repository.
+In order to push code to GitHub some additional configuration is required.
+
+This script can automatically:
+ -  Add a remote origin GitHub repository URL
+ -  Push the initial commit into GitHub
+
+This requires two important prerequisites:
+ 1. You can authenticate to GitHub via the command line
+ 2. You have already created an empty repository via the GitHub website
+
+EOF
+
+	while [[ -z "${PUSH_TO_GITHUB}" ]]; do
+
+		echo "Would you like the script to configure this?"
+		echo -n "Yes/No: "
+		read -r PUSH_TO_GITHUB_RESPONSE
+
+		case ${PUSH_TO_GITHUB_RESPONSE} in
+			Yes|yes|Y|y )
+				PUSH_TO_GITHUB="true"
+				while [[ -z "${GIT_REMOTE_ORIGIN}" ]]; do
+					echo ""
+					echo "Cool! You have made the right choice."
+					echo "What is the URL of the GitHub repository:"
+					echo "EG: (https://github.com/username/some-empty-repository.git)"
+					echo -n ": "
+					read -r GIT_REMOTE_ORIGIN
+				done
+				;;
+			No|no|N|n )
+				PUSH_TO_GITHUB="false"
+				echo ""
+				echo "NOTE: You will need perform some steps after this script."
+				echo "This can be with the following commands:"
+				echo "   git remote add origin <url>"
+				echo "   git push origin main"
+				echo ""
+				;;
+			* )
+				echo "Sorry I don't understand your response."
+				;;
+		esac
+
+	done
+
+	while [[ -z "${PROCEED}" ]]; do
+		echo ""
+		echo "==== PLEASE CONFIRM ===="
+		echo "Package Name: ${NEW_PACKAGE_NAME}"
+		[[ "${PUSH_TO_GITHUB}" == "true" ]] && echo "Remote URL:   ${GIT_REMOTE_ORIGIN}"
+		[[ "${PUSH_TO_GITHUB}" == "false" ]] && echo "No Remote URL will be set."
+		echo -n "All good? Yes/No: "
+		read -r CONFIRMATION
+
+		case ${CONFIRMATION} in
+			Yes|yes|Y|y )
+				PROCEED="Yes"
+				echo "Nice."
+				;;
+			No|no|N|n )
+				echo "Typos happen. Please re-run the script :)"
+				exit 0
+				;;
+			* )
+				echo "Sorry I don't understand your response."
+				;;
+		esac
+
+	done
+
 }
 
-# Credit to the brew.sh team for this logic
-if [[ ! -e "/Library/Developer/CommandLineTools/usr/bin/git" ]]; then
-  echo "Searching online for the Command Line Tools"
-  # This temporary file prompts the 'softwareupdate' utility to list the Command Line Tools
-  XCODE_CLT_TOUCHFILE="/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress"
-  touch "${XCODE_CLT_TOUCHFILE}"
 
-  GET_LABEL="/usr/sbin/softwareupdate -l |
-                      grep -B 1 -E 'Command Line Tools' |
-                      awk -F'*' '/^ *\\*/ {print \$2}' |
-                      sed -e 's/^ *Label: //' -e 's/^ *//' |
-                      sort -V |
-                      tail -n1"
-
-  INSTALL_LABEL="$(chomp "$(/bin/bash -c "${GET_LABEL}")")"
-
-  if [[ -n "${INSTALL_LABEL}" ]]; then
-    echo "Installing ${INSTALL_LABEL}"
-    # /usr/bin/sudo "/usr/sbin/softwareupdate" "-i" "${INSTALL_LABEL}"
-    # /usr/bin/sudo "/usr/bin/xcode-select" "--switch" "/Library/Developer/CommandLineTools"
+execute() {
+  if ! "$@"; then
+    echo "Failed Running: $*" 1>&2; exit 1;
   fi
-  /bin/rm "-f" "${XCODE_CLT_TOUCHFILE}"
+}
+
+execute_sudo() {
+  local -a args=("$@")
+  execute "/usr/bin/sudo" "${args[@]}"
+}
+
+function install_xcode_command_line_tools() {
+
+	# Credit to the brew.sh team for this logic
+	echo "Searching online for the Command Line Tools"
+	# This temporary file prompts the 'softwareupdate' utility to list the Command Line Tools
+	XCODE_CLT_TOUCHFILE="/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress"
+	touch "${XCODE_CLT_TOUCHFILE}"
+
+	GET_LABEL="/usr/sbin/softwareupdate -l |
+	                  grep -B 1 -E 'Command Line Tools' |
+	                  awk -F'*' '/^ *\\*/ {print \$2}' |
+	                  sed -e 's/^ *Label: //' -e 's/^ *//' |
+	                  sort -V |
+	                  tail -n1"
+
+	INSTALL_LABEL="$(printf "%s" "$(/bin/bash -c "${GET_LABEL}")")"
+
+	if [[ -n "${INSTALL_LABEL}" ]]; then
+	echo "Installing ${INSTALL_LABEL}"
+	execute_sudo "/usr/sbin/softwareupdate" "-i" "${INSTALL_LABEL}"
+	execute_sudo "/usr/bin/xcode-select" "--switch" "/Library/Developer/CommandLineTools"
+	fi
+	/bin/rm "-f" "${XCODE_CLT_TOUCHFILE}"
+
+}
+
+function install_munkipkg_remote() {
+
+	/bin/bash -c "$(curl -fsSL ${JORKS_MUNKI_INSTALL})"
+}
+
+function git_clone_template_and_reinitiaise() {
+
+	if [[ -z "${JORKS_TEMPLATE_REPO}" && -z "${NEW_PACKAGE_NAME}" ]]; then
+		echo "Error: Missing input to create new project." 1>&2
+		exit 1
+	fi
+
+	echo "Cloning Template: ${JORKS_TEMPLATE_REPO}"
+	echo "Creating Project: ${NEW_PACKAGE_NAME}"
+
+	execute "git" "clone" "${JORKS_TEMPLATE_REPO}" "${NEW_PACKAGE_NAME}"
+	execute "cd" "${NEW_PACKAGE_NAME}"
+	execute "rm" "-rf" ".git"
+	execute "git" "init"
+	execute "git" "add" "--all"
+	execute "git" "commit" "-m" "New package created: ${NEW_PACKAGE_NAME}"
+	execute "git" "branch" "-M" "main"
+	[[ "${PUSH_TO_GITHUB}" == "true" ]] && execute "git" "remote" "add" "origin" "${GIT_REMOTE_ORIGIN}"
+}
+
+function git_add_commit() {
+
+	echo "Running: git add commit"
+	execute "git" "add" "--all"
+	execute "git" "commit" "-m" "New package created: ${NEW_PACKAGE_NAME}"
+	[[ "${PUSH_TO_GITHUB}" == "true" ]] && execute "git" "push" "-u" "origin" "main"
+}
+
+function git_push() {
+
+	echo "Running: git push (if enabled)"
+	execute "git" "push" "-u" "origin" "main"
+}
+
+function install_git_pre-commit_hook() {
+	echo "Debug: $(pwd)"
+	set -x
+	if [[ -e "workflow/pre-commit" ]]; then	
+		echo "Installing a pre-commit git hook"
+		cat "workflow/pre-commit" >> ".git/hooks/pre-commit"
+		chmod +x ".git/hooks/pre-commit"
+		# execute "cat" "workflow/pre-commit" ">>" ".git/hooks/pre-commit"
+		# execute "chmod" "+x" ".git/hooks/pre-commit"
+	fi
+	set +x
+}
+
+
+# Main
+
+# Start the script by prompting for required inputs
+prompt_for_inputs
+
+# Check for Xcode Command Line Tools or prompt to install
+if [[ ! -e "/Library/Developer/CommandLineTools/usr/bin/git" ]]; then
+	echo "Notice: XCode Command Line Tools are required."
+	echo "Attempting to install.."
+	install_xcode_command_line_tools
+fi
+
+# Create a new Git project from the template
+if git_clone_template_and_reinitiaise; then
+	echo "Success: Cloned template and initiated new Git project"
 fi
 
 # Install Munki PKG using remote script
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/jorks/Jamf-Prestage-Assets/HEAD/workflow/install_munkipkg.sh)"
-MUNKIPKG_RESULT=$?
-
-if [[ "${MUNKIPKG_RESULT}" -ne 0 ]]; then
-	echo "Warning: Something went wrong installing MunkiPKG or using python3"
-else
+if install_munkipkg_remote; then
 	echo "Success: Installing and running Munki PKG"
+else
+	echo "Error: Something went wrong installing MunkiPKG or using python3" 1>&2
+	echo "Will still attempt moving forward. You may need to rm and start again sorry."
 fi
+
+if install_git_pre-commit_hook; then
+	echo "Success: Added a pre-commit hook to this git project"
+else
+	cat << EOF
+
+==== WARNING ====
+There was an issue installing the pre-commit git hook.
+This git hook is required to create a BOM file used to 
+track permissions and empty folders. This is going to cause 
+issues when you attempt to build packages with GitHub Actions.
+
+You can fix this manually by copying the file:
+    workflow/pre-commit
+Into this hidden directory:
+	.git/hooks/pre-commit
+
+=================
+
+EOF
+
+fi
+
+echo "Running: Blank Package Creation with name: ${NEW_PACKAGE_NAME}"
+if python3 /tmp/munki-pkg/munkipkg --json --create "${NEW_PACKAGE_NAME}"; then
+	echo "Success: New package structure created"
+	git_add_commit
+	[[ "${PUSH_TO_GITHUB}" == "true" ]] && git_push
+else
+	echo "Error: something went wrong. Please try again." 1>&2
+	exit 1
+fi
+
+cat << EOF
+
+==== SUCCESS ====
+The project "${NEW_PACKAGE_NAME}" has been successfully created.
+
+EOF
