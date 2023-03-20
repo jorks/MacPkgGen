@@ -57,6 +57,8 @@ Go to Settings > Actions > General and set the "Workflow permissions" to "Read a
 
 **Required for Package Signing:**
 
+| Key                           | Value Description                                                                                                        |
+|-------------------------------|--------------------------------------------------------------------------------------------------------------------------|
 | PKG_CERTIFICATES_P12          | A base64 output of the developer certificate P12 file. Use this command:<br>`base64 -i <certificate_name>.p12 \| pbcopy` |
 | PKG_CERTIFICATES_P12_PASSWORD | This is the password used to encrypt the developer certificate P12 file                                                  |
 | PKG_KEYCHAIN_PASSWORD         | This is a random password used to create a keychain and install the developer certificate P12 file.                      |
@@ -65,6 +67,8 @@ Go to Settings > Actions > General and set the "Workflow permissions" to "Read a
 
 _Optional - if these are not configured your package will simply skip notarization._
 
+| Key               | Value Description                                                               |
+|-------------------|---------------------------------------------------------------------------------|
 | NOTARIZE_APPLE_ID | Apple ID for the Apple Developer account to submit the package for notarization |
 | NOTARIZE_PASSWORD | App Specific Password generated for this account at appleid.apple.com           |
 | NOTARIZE_TEAM_ID  | The Team ID from the developer certificate.                                     |
