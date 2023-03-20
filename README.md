@@ -60,7 +60,7 @@ Go to Settings > Actions > General and set the "Workflow permissions" to "Read a
 | Key                           | Value Description                                                                                                        |
 |-------------------------------|--------------------------------------------------------------------------------------------------------------------------|
 | PKG_CERTIFICATES_P12          | A base64 output of the developer certificate P12 file.<br>Use this command: `base64 -i <certificate_name>.p12 \| pbcopy` |
-| PKG_CERTIFICATES_P12_PASSWORD | This is the password used to decrypt the developer certificate P12 file                                                  |
+| PKG_CERTIFICATES_P12_PASSWORD | The password used to decrypt the developer certificate P12 file                                                          |
 | PKG_KEYCHAIN_PASSWORD         | Any randomly generated password.                                                                                         |
 
 **Required for Notarization:**
