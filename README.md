@@ -50,10 +50,11 @@ This project requires some specific GitHub settings and secrets to be configured
 
 **Enable Write Permissions:**
 
-`GITHUB_TOKEN` - this is an automatically created token. You will need to enable write permissions for this token:
+`GITHUB_TOKEN` - this is an automatically created token used in workflow files. You will need to enable write permissions for this token:
+
 Go to Settings > Actions > General and set the "Workflow permissions" to "Read and write permissions".
 
-**Required for Package Signing:**
+**Secrets Required for Package Signing:**
 
 | Key                           | Value Description                                                                                                        |
 |-------------------------------|--------------------------------------------------------------------------------------------------------------------------|
@@ -61,7 +62,7 @@ Go to Settings > Actions > General and set the "Workflow permissions" to "Read a
 | PKG_CERTIFICATES_P12_PASSWORD | The password used to decrypt the developer certificate P12 file                                                          |
 | PKG_KEYCHAIN_PASSWORD         | Any randomly generated password.                                                                                         |
 
-**Required for Notarization:**
+**Secrets Required for Notarization:**
 
 _Optional - if these are not configured your package will simply skip notarization._
 
