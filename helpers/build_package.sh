@@ -40,7 +40,7 @@ case ${BUILD_INFO_FILE} in
 		echo "Found Version: ${PKG_VERSION}"
 		;;
 	* )
-		echo "Error: Unrecognised file format. Exiting." 1>&2
+		echo "Error: Unrecognised file format. This does not support yaml. Exiting." 1>&2
 		exit 1
 		;;
 esac
@@ -79,7 +79,7 @@ else
 fi
 
 # Notarize the Package for Gatekeeper
-if [[ -n "${NOTARIZE_PASSWORD}" && -n "${NOTARIZE_APPLE_ID}" && -n "${NOTARIZE_TEAM_ID}" ]]; then
+if [[ -n "${NOTARIZE_PASSWORD}" ]] && [[ -n "${NOTARIZE_APPLE_ID}" ]] && [[ -n "${NOTARIZE_TEAM_ID}" ]]; then
 	echo "Recieved valid Notarization details. Will submit package for Notarization"
 	# Setup notary credentials into the GithubWorkflow keychain
 	xcrun notarytool store-credentials --apple-id "${NOTARIZE_APPLE_ID}" --team-id "${NOTARIZE_TEAM_ID}" --password "${NOTARIZE_PASSWORD}" GithubWorkflow
@@ -112,6 +112,7 @@ if [[ -d "/Users/runner" ]]; then
 fi
 
 echo "Success: Package was build successfully."
+exit 0
 
 
 
