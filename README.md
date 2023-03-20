@@ -1,8 +1,6 @@
 # Git Package Builder
 
-This solution enables you to manage the end-to-end process of building macOS packages with git source control and GitHub Workflows.
-
-Features: 
+This solution enables you to manage the end-to-end process of building macOS packages with git source control and GitHub Workflows. Features: 
 
 - GitHub Workflow templates
 	- Build, sign and notarize a macOS package using GitHub runners
