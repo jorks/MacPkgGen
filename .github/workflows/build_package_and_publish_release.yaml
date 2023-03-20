@@ -16,12 +16,11 @@ jobs:
       - uses: actions/checkout@v3
 
       # Install PKG Signing Certificate
-      # Add the P12 file into a GitHub Secret: base64 -i <certificate_name>.p12 | pbcopy
-      # NOTE: uses: Working version of the the original apple-actions/import-codesign-certs
+      # NOTE: Working fork of the the original apple-actions/import-codesign-certs
       - name: Install Apple Developer PKG certificates
         uses: ssrobins/import-codesign-certs@04ce695a5e6002f1971a8ed78fedd676318f950f
         with:
-          keychain-password: ${{ secrets.KEYCHAIN_PASSWORD }}
+          keychain-password: ${{ secrets.PKG_KEYCHAIN_PASSWORD }}
           p12-file-base64: ${{ secrets.PKG_CERTIFICATES_P12 }}
           p12-password: ${{ secrets.PKG_CERTIFICATES_P12_PASSWORD }}
 
