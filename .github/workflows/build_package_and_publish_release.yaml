@@ -51,7 +51,7 @@ jobs:
               This package was created by GitHub Actions.
               You can update this text as required for your use case, such as using a Github Action to generate a changelog.
 
-              ## Credits
+              ## Credit
               Workflow and scripts by James Corcoran
               https://github.com/jorks
           files: ${{github.workspace}}/uploads/*.pkg
