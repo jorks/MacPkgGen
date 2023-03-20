@@ -1,6 +1,6 @@
 #!/bin/bash
 # set -x
-# This is the script that is executed by the workflow to build the package.
+# This is the script that is executed by the workflow to build the package. 
 
 
 # Assign Script Input for Notarization Secrets
