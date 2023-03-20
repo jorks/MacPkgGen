@@ -1,5 +1,79 @@
-# Jamf-Prestage-Assets
+# Git Package Builder
 
-Deploy a set of well defined Assets to computers for use during Enrolment into Jamf Pro. 
+This solution enables you to manage the end-to-end process of building macOS packages with git source control and GitHub Workflows.
 
-This repo is primarily to build out a GitHub Workflow to build macOS Packages when a Pull Request is Merged into Main.
+Features: 
+
+- GitHub Workflow templates
+	- Build, sign and notarize a macOS package using GitHub runners
+	- Create a pre-release package for testing
+	- Create a GitHub Release
+
+- Scripts to support the workflow
+	- `build_package.sh` - builds, signs and notarizes a package 
+	- `create_project.sh` - initiate a new git project using this template
+	- `install_munkipkg.sh` - install the munkipkg dependency
+	- `pre-commit` - a git Hook template to ensure git compatibility
+
+## Create a new Project
+
+This solution comes with a guided install script.
+
+On your local machine `cd` into your Packages directory and run:
+
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/jorks/Jamf-Prestage-Assets/HEAD/helpers/create_project.sh)"
+```
+
+The script will:
+
+- Prompt you for the name of your new package project
+- Prompt you for the URL of the remote GitHub repository (optional)
+- Install XCode Command Line Tools (if not installed)
+- Clone this project and initiate a new git project
+- Install Munki PKG
+- Create a new Munki PKG project
+- Add a pre-commit git hook to the local project
+- If a remote URL is provided, push the initial commit
+
+## Working with the project
+
+This solution uses Munki PKG to do the heavy lifting in building the PKG. [Please refer to their guide for detailed instructions using Munki PKG](https://www.munki.org/munki-pkg/). At a high level, you would:
+
+1. Update the `build-info` file with your package details
+2. Add Folders and Files to the `payload` directory and set ownership and permissions as desired
+3. Add any required `preinstall` and `postinstall` scripts to the `scripts` directory
+4. `git commit` the changes which will trigger the `pre-commit` git hook script
+5. Head over to GitHub and kick off the workflow in the actions tab.
+
+You may also wish to update some of the text or triggers in the `.git/workflow` files.
+
+## Setting Up the GitHub repository
+
+This project requires some specific GitHub settings and secrets to be configured in the repository.
+
+Required for Package Signing:
+
+| PKG_CERTIFICATES_P12          | A base64 output of the developer certificate P12 file. Use this command:<br>`base64 -i <certificate_name>.p12 \| pbcopy` |
+|-------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| PKG_CERTIFICATES_P12_PASSWORD | This is the password used to encrypt the developer certificate P12 file                                                  |
+| PKG_KEYCHAIN_PASSWORD         | This is a random password used to create a keychain and install the developer certificate P12 file.                      |
+
+Required for Notarization:
+
+Optional - if these are not configured your package will simply skip notarization.
+
+| NOTARIZE_APPLE_ID | Apple ID for the Apple Developer account to submit the package for notarization |
+|-------------------|---------------------------------------------------------------------------------|
+| NOTARIZE_PASSWORD | App Specific Password generated for this account at appleid.apple.com           |
+| NOTARIZE_TEAM_ID  | The Team ID from the developer certificate.                                     |
+
+Required to create a release within a workflow:
+
+`GITHUB_TOKEN` - this is an automatically created token. You will need to enable write permissions for this token:
+Go to Settings > Actions > General and set the "Workflow permissions" to "Read and write permissions".
+
+## Triggering the Workflows
+
+All the workflows are configured to run manually `on: [workflow_dispatch]` (i.e. when you click "Run Workflow"). 
+You may wish to change this, please refer to [GitHub documentation] (https://docs.github.com/en/actions/using-workflows/triggering-a-workflow).

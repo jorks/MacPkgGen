@@ -1,11 +1,11 @@
 #!/bin/bash
-# set -x
+set -x
 # This script can be used to spawn your own repo.
 
-# Will need to set the exicutble bit on scripts in the workflows dir
+# Will need to set the exicutble bit on scripts in the helpers dir
 
 JORKS_TEMPLATE_REPO="https://github.com/jorks/Jamf-Prestage-Assets.git"
-JORKS_MUNKI_INSTALL="https://raw.githubusercontent.com/jorks/Jamf-Prestage-Assets/HEAD/workflow/install_munkipkg.sh"
+JORKS_MUNKI_INSTALL="https://raw.githubusercontent.com/jorks/Jamf-Prestage-Assets/HEAD/helpers/install_munkipkg.sh"
 
 function prompt_for_inputs() {
 
@@ -163,6 +163,36 @@ function git_clone_template_and_reinitiaise() {
 	[[ "${PUSH_TO_GITHUB}" == "true" ]] && execute "git" "remote" "add" "origin" "${GIT_REMOTE_ORIGIN}"
 }
 
+function git_create_readme() {
+	if mv -f "README.md" "INSTRUCTIONS.md"; then
+		echo "Creating INSTRUCTIONS.md and README.md"
+		new_readme_content
+	fi 
+}
+
+function new_readme_content() {
+
+cat << EOF > README.md
+# ${NEW_PACKAGE_NAME}
+
+This package is source controlled and managed with git and GitHub actions.
+
+## Notes
+
+
+## Changes
+
+
+## Credit
+
+Workflow and scripts by James Corcoran
+[https://github.com/jorks](https://github.com/jorks)
+[https://jorks.net](https://jorks.net)
+EOF
+
+}
+
+
 function git_add_commit() {
 
 	echo "Running: git add commit"
@@ -178,19 +208,21 @@ function git_push() {
 }
 
 function install_git_pre-commit_hook() {
+
 	echo "Debug: $(pwd)"
 	set -x
-	if [[ -e "workflow/pre-commit" ]]; then	
+	if [[ -e "helpers/pre-commit" ]]; then	
 		echo "Installing a pre-commit git hook"
-		cat "workflow/pre-commit" >> ".git/hooks/pre-commit"
+		cat "helpers/pre-commit" >> ".git/hooks/pre-commit"
 		chmod +x ".git/hooks/pre-commit"
-		# execute "cat" "workflow/pre-commit" ">>" ".git/hooks/pre-commit"
+		# execute "cat" "helpers/pre-commit" ">>" ".git/hooks/pre-commit"
 		# execute "chmod" "+x" ".git/hooks/pre-commit"
 	fi
 	set +x
 }
 
 function message_error_pre-commit_hook() {
+
 cat << EOF
 
 ==== WARNING ====
@@ -200,7 +232,7 @@ track permissions and empty folders. This is going to cause
 issues when you attempt to build packages with GitHub Actions.
 
 You can fix this manually by copying the file:
-    workflow/pre-commit
+    helpers/pre-commit
 Into this hidden directory:
 	.git/hooks/pre-commit
 
@@ -223,9 +255,8 @@ if [[ ! -e "/Library/Developer/CommandLineTools/usr/bin/git" ]]; then
 fi
 
 # Create a new Git project from the template
-if git_clone_template_and_reinitiaise; then
-	echo "Success: Cloned template and initiated new Git project"
-fi
+git_clone_template_and_reinitiaise
+git_create_readme
 
 # Install Munki PKG using remote script
 if install_munkipkg_remote; then
