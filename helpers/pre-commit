@@ -14,7 +14,7 @@ echo "Project directory is: ${PROJECT_DIR}"
 # Find the build-info file and set the package directory
 BUILD_INFO_FILE="$( find "${PROJECT_DIR}" -name "build-info*" -print )"
 if [ -z "${BUILD_INFO_FILE}" ]; then
-	echo "Error no build-info file found. Exiting." 1>&2
+	echo "Error no build-info file found. This will not be successful." 1>&2
 else
 	PKG_PATH="$( dirname "${BUILD_INFO_FILE}" )"
 	echo "Found package path: ${PKG_PATH}"
@@ -28,13 +28,13 @@ if [ ! -d "/Users/runner" ]; then
     EXPORT_STATUS=$?
 fi
 
-# TODO: Add BOM file to tacked files
+# Add BOM file to tacked files
 if [ "${EXPORT_STATUS}" -eq 0 ]; then
 	echo "Adding BOM file to tracked files"
 	git add "${PKG_PATH}"/Bom.txt
 else 
-	echo "Error: Something went wrong with the BOM file"
+	echo "Error: Something went wrong with the BOM file" 1>&2
 fi
 
-
+# Always exit 0 even if not successful
 exit 0

@@ -24,10 +24,10 @@ jobs:
           p12-file-base64: ${{ secrets.PKG_CERTIFICATES_P12 }}
           p12-password: ${{ secrets.PKG_CERTIFICATES_P12_PASSWORD }}
 
-      - name: Downloading munkipkg and testing it can exicute with python3 
+      - name: Download munkipkg and test it can exicute with python3 
         run: ./workflow/install_munkipkg.sh
 
-      - name: Run the munkipkg build package script 
+      - name: Run the build_package script 
         run: ./workflow/build_package.sh $NOTARIZE_PASSWORD $NOTARIZE_APPLE_ID $NOTARIZE_TEAM_ID
 
       - name: Get Package Details
@@ -36,7 +36,7 @@ jobs:
           echo "PACKAGE_NAME=$(/bin/cat ./uploads/build-name.txt)" >> $GITHUB_ENV
           echo "PACKAGE_VERSION=$(/bin/cat ./uploads/build-version.txt)" >> $GITHUB_ENV
 
-      - name: Upload packages
+      - name: Upload packages to Workflow Artifacts
         uses: actions/upload-artifact@v3.1.1
         with:
           name: ${{env.PACKAGE_NAME}}-${{env.PACKAGE_VERSION}}
