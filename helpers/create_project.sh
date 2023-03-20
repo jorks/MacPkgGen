@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+# set -x
 # This script can be used to spawn your own repo.
 
 # Will need to set the exicutble bit on scripts in the helpers dir
