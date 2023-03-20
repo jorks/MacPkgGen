@@ -4,15 +4,19 @@
 
 # Will need to set the exicutble bit on scripts in the workflows dir
 
-
-# This is the GIT BITS
-# TODO: Make this interactive
-# NEW_PACKAGE_NAME="my_new_package2s"
-
 JORKS_TEMPLATE_REPO="https://github.com/jorks/Jamf-Prestage-Assets.git"
 JORKS_MUNKI_INSTALL="https://raw.githubusercontent.com/jorks/Jamf-Prestage-Assets/HEAD/workflow/install_munkipkg.sh"
 
 function prompt_for_inputs() {
+
+	cat << EOF
+
+==== WELCOME ====
+This script will create a new GitHub repo to source control a macOS package.
+It uses GitHub Workflows to build and release packages that are signed and notarized.
+Hope you enjoy!
+
+EOF
 
 	while [[ -z "${NEW_PACKAGE_NAME}" ]]; do
 		echo "What is the Package Name: "
@@ -96,7 +100,6 @@ EOF
 	done
 
 }
-
 
 execute() {
   if ! "$@"; then
