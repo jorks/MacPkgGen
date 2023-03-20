@@ -175,19 +175,20 @@ function new_readme_content() {
 cat << EOF > README.md
 # ${NEW_PACKAGE_NAME}
 
-This package is source controlled and managed with git and GitHub actions.
+This package is source controlled and managed with git and GitHub Workflows.
 
-## Notes
+### Package Notes
 
+This package includes..
 
-## Changes
+### Change History
 
+More Info..
 
-## Credit
+### Workflow Credit
 
-Workflow and scripts by James Corcoran
+Workflow and scripts by [James Corcoran](https://jorks.net).</br>
 [https://github.com/jorks](https://github.com/jorks)
-[https://jorks.net](https://jorks.net)
 EOF
 
 }
