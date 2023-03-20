@@ -15,7 +15,7 @@ This solution enables you to manage the end-to-end process of building macOS pac
 
 ## Create a new Project
 
-This solution comes with a guided install script. On your local machine `cd` into your Packages directory and run:
+This solution comes with a guided install script. On your local machine `cd` into a working directory for your packages and run:
 
 ```
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/jorks/Jamf-Prestage-Assets/HEAD/helpers/create_project.sh)"
