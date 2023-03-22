@@ -57,6 +57,7 @@ EOF
 					echo -n ": "
 					read -r GIT_REMOTE_ORIGIN
 				done
+				NEW_REPO_NAME=${GIT_REMOTE_ORIGIN##*/}
 				;;
 			No|no|N|n )
 				PUSH_TO_GITHUB="false"
@@ -78,7 +79,9 @@ EOF
 		echo ""
 		echo "==== PLEASE CONFIRM ===="
 		echo "Package Name: ${NEW_PACKAGE_NAME}"
-		[[ "${PUSH_TO_GITHUB}" == "true" ]] && echo "Remote URL:   ${GIT_REMOTE_ORIGIN}"
+		[[ "${PUSH_TO_GITHUB}" == "true" ]]  && echo "Repo Name:    ${NEW_REPO_NAME/%.git}"
+		[[ "${PUSH_TO_GITHUB}" == "true" ]]  && echo "Remote URL:   ${GIT_REMOTE_ORIGIN}"
+		[[ "${PUSH_TO_GITHUB}" == "false" ]] && echo "Repo Name:    ${NEW_PACKAGE_NAME// /-} (Assumed)"
 		[[ "${PUSH_TO_GITHUB}" == "false" ]] && echo "No Remote URL will be set."
 		echo -n "All good? Yes/No: "
 		read -r CONFIRMATION
@@ -150,11 +153,20 @@ function git_clone_template_and_reinitiaise() {
 		exit 1
 	fi
 
-	echo "Cloning Template: ${JORKS_TEMPLATE_REPO}"
-	echo "Creating Project: ${NEW_PACKAGE_NAME}"
+	case "${PUSH_TO_GITHUB}" in
+		true )
+			NEW_LOCAL_REPO="${NEW_REPO_NAME/%.git}"
+			;;
+		false )
+			NEW_LOCAL_REPO="${NEW_PACKAGE_NAME// /-}"
+			;;
+	esac
 
-	execute "git" "clone" "${JORKS_TEMPLATE_REPO}" "${NEW_PACKAGE_NAME}"
-	execute "cd" "${NEW_PACKAGE_NAME}"
+	echo "Cloning Template: ${JORKS_TEMPLATE_REPO}"
+	echo "Creating Project: ${NEW_LOCAL_REPO}"
+
+	execute "git" "clone" "${JORKS_TEMPLATE_REPO}" "${NEW_LOCAL_REPO}"
+	execute "cd" "${NEW_LOCAL_REPO}"
 	execute "rm" "-rf" ".git"
 	execute "git" "init"
 	execute "git" "add" "--all"
@@ -210,8 +222,6 @@ function git_push() {
 
 function install_git_pre-commit_hook() {
 
-	echo "Debug: $(pwd)"
-	set -x
 	if [[ -e "helpers/pre-commit" ]]; then	
 		echo "Installing a pre-commit git hook"
 		cat "helpers/pre-commit" >> ".git/hooks/pre-commit"
@@ -219,7 +229,6 @@ function install_git_pre-commit_hook() {
 		# execute "cat" "helpers/pre-commit" ">>" ".git/hooks/pre-commit"
 		# execute "chmod" "+x" ".git/hooks/pre-commit"
 	fi
-	set +x
 }
 
 function message_error_pre-commit_hook() {
