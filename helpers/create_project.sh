@@ -4,8 +4,8 @@
 
 # Will need to set the executable bit on scripts in the helpers dir
 
-JORKS_TEMPLATE_REPO="https://github.com/jorks/Jamf-Prestage-Assets.git"
-JORKS_MUNKI_INSTALL="https://raw.githubusercontent.com/jorks/Jamf-Prestage-Assets/HEAD/helpers/install_munkipkg.sh"
+JORKS_TEMPLATE_REPO="https://github.com/jorks/MacPkgGen.git"
+JORKS_MUNKI_INSTALL="https://raw.githubusercontent.com/jorks/MacPkgGen/main/helpers/install_munkipkg.sh"
 
 function prompt_for_inputs() {
 
@@ -200,7 +200,7 @@ More Info..
 ### Workflow Credit
 
 Workflow and scripts by [James Corcoran](https://jorks.net).</br>
-[https://github.com/jorks](https://github.com/jorks)
+[https://github.com/jorks/MacPkgGen](https://github.com/jorks/MacPkgGen)
 EOF
 
 }

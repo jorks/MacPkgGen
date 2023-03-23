@@ -53,7 +53,7 @@ jobs:
 
               ## Credit
               Workflow and scripts by [James Corcoran](https://jorks.net)
-              https://github.com/jorks
+              https://github.com/jorks/MacPkgGen
           files: ${{github.workspace}}/uploads/*.pkg
 
       - name: Upload packages to Workflow Artifacts

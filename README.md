@@ -13,7 +13,7 @@
 This solution comes with a guided install script. On your local machine `cd` into a working directory for your packages and run:
 
 ```
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/jorks/Jamf-Prestage-Assets/HEAD/helpers/create_project.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/jorks/MacPkgGen/main/helpers/create_project.sh)"
 ```
 
 The script will:
