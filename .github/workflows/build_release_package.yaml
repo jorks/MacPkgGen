@@ -25,10 +25,10 @@ jobs:
           p12-password: ${{ secrets.PKG_CERTIFICATES_P12_PASSWORD }}
 
       - name: Download munkipkg and test it can execute with python3 
-        run: ./workflow/install_munkipkg.sh
+        run: ./helpers/install_munkipkg.sh
 
       - name: Run the build_package script 
-        run: ./workflow/build_package.sh $NOTARIZE_PASSWORD $NOTARIZE_APPLE_ID $NOTARIZE_TEAM_ID
+        run: ./helpers/build_package.sh $NOTARIZE_PASSWORD $NOTARIZE_APPLE_ID $NOTARIZE_TEAM_ID
 
       - name: Get Package Details
         id: get_package_details
