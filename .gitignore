@@ -7,4 +7,5 @@ DEV_NOTES.md
 .idea/*
 *.sublime-project
 *.sublime-workspace
+*.vscode/*
 

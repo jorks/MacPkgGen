@@ -51,7 +51,7 @@ echo "Check: can run munki-pkg with python3 from PATH..."
 
 MP_VERSION=$( python3 ${MP_BIN_DIR}/munkipkg --version )
 if [[ -z "${MP_VERSION}" ]] ; then
-	echo "Error: can not execut munkipkg --version" 1>&2
+	echo "Error: can not execute munkipkg --version" 1>&2
 	if [[ ! -f ${MP_BIN_DIR}/munkipkg ]]; then echo "Error: can not find munki-pkg" 1>&2; fi
 	if ! command -v python3 &> /dev/null; then echo "Error: can not find python3"  1>&2; fi
 	exit 1
@@ -60,7 +60,7 @@ else
 fi
 
 
-# Perfom a BOM file sync if running on github
+# Perform a BOM file sync if running on github
 if [[ -d "/Users/runner" ]]; then
     echo "Status: We are running on a github runner"
     echo "Running a project Sync with the BOM file"
@@ -80,7 +80,7 @@ fi
 
 # Notarize the Package for Gatekeeper
 if [[ -n "${NOTARIZE_PASSWORD}" ]] && [[ -n "${NOTARIZE_APPLE_ID}" ]] && [[ -n "${NOTARIZE_TEAM_ID}" ]]; then
-	echo "Recieved valid Notarization details. Will submit package for Notarization"
+	echo "Received valid Notarization details. Will submit package for Notarization"
 	# Setup notary credentials into the GithubWorkflow keychain
 	xcrun notarytool store-credentials --apple-id "${NOTARIZE_APPLE_ID}" --team-id "${NOTARIZE_TEAM_ID}" --password "${NOTARIZE_PASSWORD}" GithubWorkflow
 
