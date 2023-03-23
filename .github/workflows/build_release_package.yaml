@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v3
 
       # Install PKG Signing Certificate
-      # NOTE: Working fork of the the original apple-actions/import-codesign-certs
+      # NOTE: Working fork of the original apple-actions/import-codesign-certs
       - name: Install Apple Developer PKG certificates
         uses: ssrobins/import-codesign-certs@04ce695a5e6002f1971a8ed78fedd676318f950f
         with:
@@ -24,7 +24,7 @@ jobs:
           p12-file-base64: ${{ secrets.PKG_CERTIFICATES_P12 }}
           p12-password: ${{ secrets.PKG_CERTIFICATES_P12_PASSWORD }}
 
-      - name: Download munkipkg and test it can exicute with python3 
+      - name: Download munkipkg and test it can execute with python3 
         run: ./workflow/install_munkipkg.sh
 
       - name: Run the build_package script 
@@ -49,7 +49,7 @@ jobs:
           body: |
               # Notes
               This package was created by GitHub Actions.
-              You can update this text as required for your use case, such as using a Github Action to generate a changelog.
+              You can update this text as required for your use case, such as using a GitHub Action to generate a changelog.
 
               ## Credit
               Workflow and scripts by [James Corcoran](https://jorks.net)

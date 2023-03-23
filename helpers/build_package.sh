@@ -60,9 +60,9 @@ else
 fi
 
 
-# Perform a BOM file sync if running on github
+# Perform a BOM file sync if running on GitHub
 if [[ -d "/Users/runner" ]]; then
-    echo "Status: We are running on a github runner"
+    echo "Status: We are running on a GitHub runner"
     echo "Running a project Sync with the BOM file"
     python3 "${MP_BIN_DIR}/munkipkg" --sync "$PKG_PATH"
 fi
@@ -80,7 +80,7 @@ fi
 
 # Notarize the Package for Gatekeeper
 if [[ -n "${NOTARIZE_PASSWORD}" ]] && [[ -n "${NOTARIZE_APPLE_ID}" ]] && [[ -n "${NOTARIZE_TEAM_ID}" ]]; then
-	echo "Received valid Notarization details. Will submit package for Notarization"
+	echo "Received valid Notarization details. Will submit the package for Notarization"
 	# Setup notary credentials into the GithubWorkflow keychain
 	xcrun notarytool store-credentials --apple-id "${NOTARIZE_APPLE_ID}" --team-id "${NOTARIZE_TEAM_ID}" --password "${NOTARIZE_PASSWORD}" GithubWorkflow
 
@@ -111,7 +111,7 @@ if [[ -d "/Users/runner" ]]; then
 	echo "${PKG_VERSION}" > "${UPLOAD_DIR}/build-version.txt"
 fi
 
-echo "Success: Package was build successfully."
+echo "Success: Package was built successfully."
 exit 0
 
 

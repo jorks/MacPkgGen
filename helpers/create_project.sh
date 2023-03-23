@@ -2,7 +2,7 @@
 # set -x
 # This script can be used to spawn your own repo.
 
-# Will need to set the exicutble bit on scripts in the helpers dir
+# Will need to set the executable bit on scripts in the helpers dir
 
 JORKS_TEMPLATE_REPO="https://github.com/jorks/Jamf-Prestage-Assets.git"
 JORKS_MUNKI_INSTALL="https://raw.githubusercontent.com/jorks/Jamf-Prestage-Assets/HEAD/helpers/install_munkipkg.sh"
@@ -146,7 +146,7 @@ function install_munkipkg_remote() {
 	/bin/bash -c "$(curl -fsSL ${JORKS_MUNKI_INSTALL})"
 }
 
-function git_clone_template_and_reinitiaise() {
+function git_clone_template_and_reinitialise() {
 
 	if [[ -z "${JORKS_TEMPLATE_REPO}" && -z "${NEW_PACKAGE_NAME}" ]]; then
 		echo "Error: Missing input to create new project." 1>&2
@@ -265,7 +265,7 @@ if [[ ! -e "/Library/Developer/CommandLineTools/usr/bin/git" ]]; then
 fi
 
 # Create a new Git project from the template
-git_clone_template_and_reinitiaise
+git_clone_template_and_reinitialise
 git_create_readme
 
 # Install Munki PKG using remote script
@@ -273,7 +273,7 @@ if install_munkipkg_remote; then
 	echo "Success: Installing and running Munki PKG"
 else
 	echo "Error: Something went wrong installing MunkiPKG or using python3" 1>&2
-	echo "Will still attempt moving forward. You may need to rm and start again sorry."
+	echo "Will still attempt to move forward. You may need to rm and start again sorry."
 fi
 
 echo "Running: Blank Package Creation with name: ${NEW_PACKAGE_NAME}"

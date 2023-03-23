@@ -12,7 +12,7 @@ MP_BIN_DIR="${1:-/tmp/munki-pkg}"
 
 remove_file() { # Accepts a path as input
     if [[ -d "/Users/runner" ]]; then
-        echo "We are running on a github runner"
+        echo "We are running on a GitHub runner"
         /usr/bin/sudo /bin/rm -rf "${1}"
     else
         /bin/rm -rf "${1}"
