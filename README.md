@@ -1,17 +1,12 @@
-# Git Package Builder
+# Mac Package Generator
 
-This solution enables you to manage the end-to-end process of building macOS packages with git source control and GitHub Workflows. Features: 
-
-- GitHub Workflow templates
-	- Build, sign and notarize a macOS package using GitHub runners
-	- Create a pre-release package for testing
-	- Create a GitHub Release
+[Mac Package Generator](https://github.com/jorks/MacPkgGen) streamlines the creation of macOS packages by leveraging GitHub Actions. With built-in git source control, this end-to-end solution automates the process of building, signing, and notarizing a macOS package into a GitHub Release. Creating a new package project is simple with the one-line "create project" script.
 
 - Scripts to support the workflow
-	- `build_package.sh` - builds, signs and notarizes a package 
 	- `create_project.sh` - initiate a new git project using this repository as a template
-	- `install_munkipkg.sh` - install the munkipkg dependency
-	- `pre-commit` - a git Hook to ensure git compatibility
+	- `build_package.sh` - builds, signs and notarizes a package 
+	- `install_munkipkg.sh` - install the munkipkg dependency as required
+	- `pre-commit` - a git Hook to ensure git compatibility via a BOM.txt file
 
 ## Create a new Project
 
