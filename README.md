@@ -7,6 +7,7 @@
 	- `build_package.sh` - builds, signs and notarizes a package 
 	- `install_munkipkg.sh` - install the munkipkg dependency as required
 	- `pre-commit` - a git Hook to ensure git compatibility via a BOM.txt file
+	- `install_dependencies.sh` - run this script after you clone an existing project
 
 ## Create a new Project
 
@@ -31,11 +32,17 @@ The script will:
 
 This solution uses Munki PKG to do the heavy lifting in building the package. Please refer to [their guide](https://www.munki.org/munki-pkg/) for detailed instructions using Munki PKG. After creating a new project, you would typically:
 
+**Setup the Package**
+
 1. Update the `build-info` file with your package details
 2. Add Folders and Files to the `payload` directory and set ownership and permissions as desired
-3. Add any required `preinstall` and `postinstall` scripts to the `scripts` directory
-4. `git commit` the changes which will trigger the `pre-commit` git hook script
-5. `git push` and head over to GitHub and kick off the workflow in the actions tab.
+3. Add any required `preinstall` and `postinstall` scripts to the `scripts` directory.
+
+**Use git to commit and push your changes to GitHub**
+
+1. `git add .` to add all the changes and new files
+2. `git commit` the changes which will trigger the `pre-commit` git hook script
+3. `git push` and head over to GitHub and kick off the workflow in the actions tab.
 
 You may also wish to update some of the text or triggers in the `.git/workflow` files.
 
@@ -73,3 +80,13 @@ All the workflows are configured to run manually when you click "Run Workflow" v
 This is defined with `on: [workflow_dispatch]` in the workflow files.
 
 You may wish to change this, please refer to the [GitHub documentation](https://docs.github.com/en/actions/using-workflows/triggering-a-workflow).
+
+## Cloning an Existing Project
+
+When you clone an existing project you will need to run a script to install the `install_dependencies.sh` script to:
+
+- Check for Xcode CLT and prompt you to install them if they are missing.
+- Install MunkiPKG
+- Add the git pre-commit hook
+- Sync the BOM file into your local project.
+
