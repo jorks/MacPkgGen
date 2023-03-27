@@ -83,10 +83,10 @@ You may wish to change this, please refer to the [GitHub documentation](https://
 
 ## Cloning an Existing Project
 
-When you clone an existing project you will need to run a script to install the `install_dependencies.sh` script to:
+When you clone an existing project you will need to run the `install_dependencies.sh` script. This will:
 
-- Check for Xcode CLT and prompt you to install them if they are missing.
+- Check for Xcode CLT and prompt you to install them if they are missing
 - Install MunkiPKG
 - Add the git pre-commit hook
-- Sync the BOM file into your local project.
+- Sync the BOM file into the local git project.
 
