@@ -170,7 +170,7 @@ function git_clone_template_and_reinitialise() {
 	execute "rm" "-rf" ".git"
 	execute "git" "init"
 	execute "git" "add" "--all"
-	execute "git" "commit" "-m" "New package created: ${NEW_PACKAGE_NAME}"
+	execute "git" "commit" "--no-verify" "-m" "New package created: ${NEW_PACKAGE_NAME}"
 	execute "git" "branch" "-M" "main"
 	[[ "${PUSH_TO_GITHUB}" == "true" ]] && execute "git" "remote" "add" "origin" "${GIT_REMOTE_ORIGIN}"
 }
@@ -210,8 +210,7 @@ function git_add_commit() {
 
 	echo "Running: git add commit"
 	execute "git" "add" "--all"
-	execute "git" "commit" "-m" "New package created: ${NEW_PACKAGE_NAME}"
-	[[ "${PUSH_TO_GITHUB}" == "true" ]] && execute "git" "push" "-u" "origin" "main"
+	execute "git" "commit" "--no-verify" "-m" "New package created: ${NEW_PACKAGE_NAME}"
 }
 
 function git_push() {
@@ -287,7 +286,7 @@ if python3 /tmp/munki-pkg/munkipkg --json --create "${NEW_PACKAGE_NAME}"; then
 	fi
 
 	git_add_commit
-	[[ "${PUSH_TO_GITHUB}" == "true" ]] && git_push
+	if [[ "${PUSH_TO_GITHUB}" == "true" ]]; then git_push; fi
 else
 	echo "Error: something went wrong. Please try again." 1>&2
 	exit 1
